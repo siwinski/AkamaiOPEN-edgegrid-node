@@ -13,14 +13,32 @@
 // limitations under the License.
 
 const crypto = require('crypto'),
-    moment = require('moment'),
     logger = require('./logger'),
     path = require('path'),
     os = require('os');
 
+function twoDigitNumberPad(number) {
+    return String(number).padStart(2, '0');
+}
+
 module.exports = {
+    /**
+     * Create timestamp with format "yyyyMMddTHH:mm:ss+0000"
+     *
+     * @see https://developer.akamai.com/legacy/introduction/Client_Auth.html#authorizationheaderfields
+     */
     createTimestamp: function () {
-        return moment().utc().format('YYYYMMDDTHH:mm:ss+0000');
+        const date = new Date(Date.now());
+
+        return date.getUTCFullYear() +
+            twoDigitNumberPad(date.getUTCMonth() + 1) +
+            twoDigitNumberPad(date.getUTCDate()) +
+            'T' +
+            twoDigitNumberPad(date.getUTCHours()) + ':' +
+            twoDigitNumberPad(date.getUTCMinutes()) +
+            ':' +
+            twoDigitNumberPad(date.getUTCSeconds()) +
+            '+0000';
     },
 
     contentHash: function (request, maxBody) {
